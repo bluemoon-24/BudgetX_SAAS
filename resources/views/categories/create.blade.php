@@ -1,0 +1,34 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-bold text-2xl text-slate-800 leading-tight flex items-center gap-2" style="font-family: 'Outfit', sans-serif;">
+            <i class="fa-solid fa-tags text-purple-500"></i> Create Category
+        </h2>
+    </x-slot>
+    <div class="py-8">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                <x-validation-errors class="mb-4" />
+                <form method="POST" action="{{ route('categories.store') }}">
+                    @csrf
+                    <div class="space-y-6">
+                        <div>
+                            <x-label for="name" value="Category Name" />
+                            <x-input id="name" name="name" type="text" class="mt-1 block w-full" required autofocus />
+                        </div>
+                        <div>
+                            <x-label for="type" value="Type" />
+                            <select id="type" name="type" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm" required>
+                                <option value="expense">Expense</option>
+                                <option value="income">Income</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-end gap-3">
+                            <a href="{{ route('categories.index') }}" class="px-6 py-3 border border-slate-200 rounded-xl font-bold text-slate-600 hover:bg-slate-50 transition">Cancel</a>
+                            <button type="submit" class="px-6 py-3 bg-purple-500 text-white rounded-xl font-bold hover:bg-purple-600 transition shadow-lg shadow-purple-500/20"><i class="fa-solid fa-check mr-2"></i> Create Category</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
