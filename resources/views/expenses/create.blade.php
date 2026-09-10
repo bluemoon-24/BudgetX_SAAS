@@ -1,49 +1,70 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-xl text-gray-800">💸 Add Expense</h2>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('expenses.index') }}" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
+            </a>
+            <div>
+                <h2 class="font-bold text-2xl text-slate-800 dark:text-white leading-tight flex items-center gap-2 font-display">
+                    <i class="fa-solid fa-receipt text-rose-500"></i> Add Expense
+                </h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Record a new spending transaction.</p>
+            </div>
+        </div>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white rounded-2xl shadow-premium border border-gray-100 p-8">
-                <form action="{{ route('expenses.store') }}" method="POST" class="space-y-5">
+            <div class="card p-6 sm:p-8 bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl shadow-sm">
+                <x-validation-errors class="mb-4" />
+                
+                <form action="{{ route('expenses.store') }}" method="POST" class="space-y-6">
                     @csrf
-
+                    
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
-                        <input type="text" name="description" value="{{ old('description') }}" placeholder="e.g. Grocery shopping" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-brand-500 focus:border-brand-500" />
-                        @error('description')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        <x-label for="amount" value="Amount ({{ auth()->user()?->currencyCode() ?? 'USD' }})" />
+                        <x-input type="number" step="0.01" min="0.01" name="amount" id="amount" value="{{ old('amount') }}" placeholder="0.00" class="mt-1 block w-full" required autofocus />
+                        @error('amount')
+                            <p class="mt-2 text-sm text-rose-600 dark:text-rose-400 font-medium">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Amount *</label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">LKR</span>
-                            <input type="number" name="amount" value="{{ old('amount') }}" step="0.01" min="0.01" class="w-full border border-gray-200 rounded-xl pl-12 pr-4 py-2.5 text-sm focus:ring-brand-500 focus:border-brand-500" required />
-                        </div>
-                        @error('amount')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Category *</label>
-                        <select name="category_id" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-brand-500 focus:border-brand-500" required>
+                        <x-label for="category_id" value="Category" />
+                        <select id="category_id" name="category_id" class="mt-1 block w-full border-slate-300 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 rounded-xl shadow-sm text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 transition" required>
                             <option value="">Select a category</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" @selected(old('category_id') == $cat->id)>{{ $cat->name }}</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" @selected(old('category_id') == $category->id)>
+                                    {{ $category->name }}
+                                </option>
                             @endforeach
                         </select>
-                        @error('category_id')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        @error('category_id')
+                            <p class="mt-2 text-sm text-rose-600 dark:text-rose-400 font-medium">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Date *</label>
-                        <input type="date" name="date" value="{{ old('date', now()->format('Y-m-d')) }}" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-brand-500 focus:border-brand-500" required />
-                        @error('date')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        <x-label for="date" value="Date" />
+                        <x-input type="date" name="date" id="date" value="{{ old('date', now()->format('Y-m-d')) }}" class="mt-1 block w-full" required />
+                        @error('date')
+                            <p class="mt-2 text-sm text-rose-600 dark:text-rose-400 font-medium">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <div class="flex gap-3 pt-2">
-                        <button type="submit" class="px-6 py-2.5 bg-brand-600 text-white rounded-xl font-semibold hover:bg-brand-700 transition text-sm">Save Expense</button>
-                        <a href="{{ route('expenses.index') }}" class="px-6 py-2.5 border border-gray-200 text-gray-600 rounded-xl font-semibold hover:bg-gray-50 transition text-sm">Cancel</a>
+                    <div>
+                        <x-label for="description" value="Description (Optional)" />
+                        <x-input type="text" name="description" id="description" value="{{ old('description') }}" class="mt-1 block w-full" placeholder="e.g. Groceries, Dinner" />
+                        @error('description')
+                            <p class="mt-2 text-sm text-rose-600 dark:text-rose-400 font-medium">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                        <a href="{{ route('expenses.index') }}" class="btn-secondary">Cancel</a>
+                        <button type="submit" class="btn-primary">
+                            <i class="fa-solid fa-check mr-2"></i> Save Expense
+                        </button>
                     </div>
                 </form>
             </div>

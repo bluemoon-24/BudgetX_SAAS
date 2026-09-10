@@ -10,39 +10,62 @@ use Illuminate\Http\Request;
 
 class CategoryApiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Return both system categories and user's own
-        $categories = Category::where(function($q) {
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'type' => ['nullable', 'in:income,expense'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        $query = Category::where(function ($q) {
             $q->where('user_id', auth()->id())
               ->orWhereNull('user_id');
-        })->get();
+        });
 
-        return CategoryResource::collection($categories);
+        if (! empty($validated['search'])) {
+            $query->where('name', 'like', '%'.$validated['search'].'%');
+        }
+
+        if (! empty($validated['type'])) {
+            $query->where('type', $validated['type']);
+        }
+
+        $categories = $query->orderBy('name')->paginate($validated['per_page'] ?? 20);
+
+        return CategoryResource::collection($categories)->additional([
+            'success' => true,
+            'message' => 'Categories retrieved successfully.',
+        ]);
     }
 
     public function store(StoreCategoryRequest $request)
     {
         $category = auth()->user()->categories()->create($request->validated());
-        return new CategoryResource($category);
+
+        return $this->successResponse(new CategoryResource($category), 'Category created successfully.', 201);
     }
 
     public function show(Category $category)
     {
-        return new CategoryResource($category);
+        $this->authorize('view', $category);
+
+        return $this->successResponse(new CategoryResource($category), 'Category retrieved successfully.');
     }
 
     public function update(StoreCategoryRequest $request, Category $category)
     {
         $this->authorize('update', $category);
         $category->update($request->validated());
-        return new CategoryResource($category);
+
+        return $this->successResponse(new CategoryResource($category), 'Category updated successfully.');
     }
 
     public function destroy(Category $category)
     {
         $this->authorize('delete', $category);
         $category->delete();
-        return response()->json(['message' => 'Category deleted.']);
+
+        return $this->successResponse(null, 'Category deleted successfully.');
     }
 }

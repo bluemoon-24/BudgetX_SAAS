@@ -32,12 +32,19 @@
                             <span class="text-xs font-semibold uppercase tracking-wider {{ $category->type === 'income' ? 'text-emerald-500' : 'text-rose-500' }}">{{ $category->type }}</span>
                         </div>
                     </div>
-                    <div class="flex gap-2">
-                        <a href="{{ route('categories.edit', $category) }}" class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-indigo-100 hover:text-indigo-600 transition"><i class="fa-solid fa-pen text-xs"></i></a>
-                        <form method="POST" action="{{ route('categories.destroy', $category) }}" onsubmit="return confirm('Delete this category?')">
-                            @csrf @method('DELETE')
-                            <button class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition"><i class="fa-solid fa-trash text-xs"></i></button>
-                        </form>
+                    <div class="flex items-center gap-2">
+                        @can('update', $category)
+                            <a href="{{ route('categories.edit', $category) }}" class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-indigo-100 hover:text-indigo-600 transition" title="Edit"><i class="fa-solid fa-pen text-xs"></i></a>
+                        @endcan
+                        @can('delete', $category)
+                            <form method="POST" action="{{ route('categories.destroy', $category) }}" onsubmit="return confirm('Delete this category?')">
+                                @csrf @method('DELETE')
+                                <button class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition" title="Delete"><i class="fa-solid fa-trash text-xs"></i></button>
+                            </form>
+                        @endcan
+                        @if($category->user_id === null)
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 border border-slate-200">Default</span>
+                        @endif
                     </div>
                 </div>
                 @endforeach

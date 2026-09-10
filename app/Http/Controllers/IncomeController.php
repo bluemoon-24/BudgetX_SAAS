@@ -20,15 +20,16 @@ class IncomeController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
+        $totalAmount = (clone $query)->sum('amount');
         $incomes     = $query->orderBy('date', 'desc')->paginate(15)->withQueryString();
         $categories  = Category::where('type', 'income')->where(fn($q) => $q->whereNull('user_id')->orWhere('user_id', auth()->id()))->get();
-        $totalAmount = $query->sum('amount');
 
         return view('incomes.index', compact('incomes', 'categories', 'totalAmount'));
     }
 
     public function create()
     {
+        Category::ensureSystemDefaults();
         $categories = Category::where('type', 'income')->where(fn($q) => $q->whereNull('user_id')->orWhere('user_id', auth()->id()))->get();
         return view('incomes.create', compact('categories'));
     }

@@ -18,7 +18,9 @@
                     </div>
                 </div>
                 <div class="flex gap-3">
-                    <a href="{{ route('categories.edit', $category) }}" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition"><i class="fa-solid fa-pen mr-2"></i> Edit</a>
+                    @can('update', $category)
+                        <a href="{{ route('categories.edit', $category) }}" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition"><i class="fa-solid fa-pen mr-2"></i> Edit</a>
+                    @endcan
                     <a href="{{ route('categories.index') }}" class="px-6 py-3 border border-slate-200 rounded-xl font-bold text-slate-600 hover:bg-slate-50 transition">Back</a>
                 </div>
             </div>

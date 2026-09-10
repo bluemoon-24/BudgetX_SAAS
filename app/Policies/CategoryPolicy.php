@@ -14,7 +14,7 @@ class CategoryPolicy
 
     public function view(User $user, Category $category): bool
     {
-        return $user->id === $category->user_id || $user->isAdmin();
+        return $category->user_id === null || $user->id === $category->user_id || $user->isAdmin();
     }
 
     public function create(User $user): bool
@@ -24,11 +24,11 @@ class CategoryPolicy
 
     public function update(User $user, Category $category): bool
     {
-        return $user->id === $category->user_id || $user->isAdmin();
+        return ($category->user_id !== null && $user->id === $category->user_id) || $user->isAdmin();
     }
 
     public function delete(User $user, Category $category): bool
     {
-        return $user->id === $category->user_id || $user->isAdmin();
+        return ($category->user_id !== null && $user->id === $category->user_id) || $user->isAdmin();
     }
 }

@@ -19,7 +19,10 @@ class BudgetCollaboratorController extends Controller
         }
 
         $request->validate([
-            'email' => 'required|email|exists:users,email'
+            'email' => ['required', 'email', 'exists:users,email'],
+        ], [
+            'email.exists' => 'Invalid email. Please enter an email of an existing user in the system.',
+            'email.email' => 'Invalid email. Please enter a valid email address.',
         ]);
 
         $collaborator = User::where('email', $request->email)->first();

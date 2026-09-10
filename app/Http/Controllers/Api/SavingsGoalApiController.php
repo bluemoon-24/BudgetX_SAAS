@@ -12,9 +12,13 @@ class SavingsGoalApiController extends Controller
 {
     public function index(Request $request)
     {
+        $validated = $request->validate([
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
         $query = auth()->user()->savingsGoals();
 
-        return SavingsGoalResource::collection($query->orderBy('created_at', 'desc')->paginate(20));
+        return SavingsGoalResource::collection($query->orderBy('created_at', 'desc')->paginate($validated['per_page'] ?? 20));
     }
 
     public function store(StoreSavingsGoalRequest $request)

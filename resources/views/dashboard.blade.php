@@ -1,242 +1,313 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-bold text-2xl text-slate-800 leading-tight flex items-center gap-2 font-display">
-                <i class="fa-solid fa-chart-line text-indigo-600"></i> Dashboard
-            </h2>
-            @if(!auth()->user()->hasRole('premium'))
-                <a href="{{ route('subscribe') }}" class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 transition-transform">
-                    <i class="fa-solid fa-crown mr-1 text-yellow-300"></i> Upgrade to Premium
-                </a>
-            @else
-                <span class="px-3 py-1 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 rounded-full text-xs font-bold border border-indigo-200">
-                    <i class="fa-solid fa-crown mr-1 text-indigo-600"></i> Premium Member
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center animate-fade-in-up">
+            <div>
+                <h1 class="text-3xl font-display font-bold text-gray-900 tracking-tight">Dashboard</h1>
+                <div class="text-sm text-gray-500 mt-1">Welcome back, {{ auth()->user()->name }}. Here is your financial overview.</div>
+            </div>
+            @if(auth()->user()->hasRole('premium'))
+                <span class="mt-4 sm:mt-0 px-3.5 py-1.5 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 rounded-full text-xs font-bold border border-indigo-200 flex items-center gap-1.5">
+                    <i class="fa-solid fa-crown text-yellow-500"></i> Premium Active
                 </span>
             @endif
         </div>
     </x-slot>
 
-    <!-- Include Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <div class="py-8" x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 800)">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-
-            {{-- Flash Messages --}}
-            @if(session('success'))
-                <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-4 rounded-2xl text-sm font-medium shadow-sm flex items-center gap-3">
-                    <i class="fa-solid fa-check-circle text-xl"></i> {{ session('success') }}
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            
+            {{-- Premium Promotion Banner for Basic Users --}}
+            @if(!auth()->user()->hasRole('premium'))
+                <div class="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl shadow-glow p-8 mb-8 text-white flex flex-col sm:flex-row justify-between items-center transform transition-all duration-300 hover:-translate-y-1 animate-fade-in-up relative overflow-hidden" style="animation-delay: 0.1s;">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                    <div class="relative z-10">
+                        <h2 class="text-xl font-display font-bold flex items-center gap-3">
+                            <svg class="w-6 h-6 text-yellow-300 drop-shadow-md" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            Unlock Premium Analytics
+                        </h2>
+                        <p class="text-primary-50 text-sm mt-2 max-w-lg">Get deeper insights, custom reports, and shared financial goals to accelerate your financial freedom.</p>
+                    </div>
+                    <a href="{{ route('subscribe') }}" class="mt-6 sm:mt-0 relative z-10 inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-xl shadow-lg text-sm font-semibold text-primary-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all hover:scale-105 active:scale-95">
+                        Upgrade Now
+                    </a>
                 </div>
             @endif
 
-            {{-- Skeleton Loading State (Alpine.js) --}}
-            <template x-if="loading">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
-                    <div class="h-32 bg-slate-200 rounded-3xl"></div>
-                    <div class="h-32 bg-slate-200 rounded-3xl"></div>
-                    <div class="h-32 bg-slate-200 rounded-3xl"></div>
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8 animate-fade-in-up" style="animation-delay: 0.2s;">
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-100 shadow-soft hover:shadow-glass hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-primary-50 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -mr-12 -mt-12"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-sm font-semibold text-gray-500 tracking-wide flex items-center gap-2 uppercase">
+                            <div class="p-1.5 bg-primary-100 rounded-lg text-primary-600">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            </div>
+                            Balance
+                        </h3>
+                        <p class="mt-4 text-4xl font-display font-bold {{ $netBalance >= 0 ? 'text-gray-900' : 'text-red-600' }} tracking-tight group-hover:scale-105 transform origin-left transition-transform duration-300">
+                            {{ auth()->user()->formatCurrency($netBalance) }}
+                        </p>
+                    </div>
                 </div>
-            </template>
-
-            {{-- Actual Content --}}
-            <template x-if="!loading">
-                <div class="space-y-8">
-                    {{-- Stats Row --}}
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                        {{-- Net Balance --}}
-                        <div class="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-3xl p-8 shadow-xl shadow-slate-900/20 relative overflow-hidden">
-                            <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl"></div>
-                            <p class="text-indigo-200 text-sm font-bold uppercase tracking-widest mb-1 relative z-10">Net Balance</p>
-                            <p class="text-4xl lg:text-5xl font-display font-extrabold relative z-10">LKR {{ number_format($netBalance, 2) }}</p>
-                            <p class="text-indigo-300/70 text-xs mt-3 relative z-10"><i class="fa-regular fa-calendar mr-1"></i> {{ now()->format('F Y') }}</p>
-                        </div>
-
-                        {{-- Total Income --}}
-                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
-                            <div>
-                                <div class="flex justify-between items-start mb-2">
-                                    <p class="text-slate-500 text-sm font-bold uppercase tracking-widest">Total Income</p>
-                                    <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-arrow-down"></i></div>
-                                </div>
-                                <p class="text-3xl font-display font-extrabold text-slate-800">LKR {{ number_format($totalIncome, 2) }}</p>
+                
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-100 shadow-soft hover:shadow-glass hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -mr-12 -mt-12"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-sm font-semibold text-gray-500 tracking-wide flex items-center gap-2 uppercase">
+                            <div class="p-1.5 bg-green-100 rounded-lg text-green-600">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                             </div>
-                            <a href="{{ route('incomes.create') }}" class="inline-block mt-4 text-sm text-emerald-600 font-bold hover:text-emerald-700 transition-colors"><i class="fa-solid fa-plus mr-1"></i> Add Income</a>
-                        </div>
-
-                        {{-- Total Expenses --}}
-                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
-                            <div>
-                                <div class="flex justify-between items-start mb-2">
-                                    <p class="text-slate-500 text-sm font-bold uppercase tracking-widest">Total Expenses</p>
-                                    <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center"><i class="fa-solid fa-arrow-up"></i></div>
-                                </div>
-                                <p class="text-3xl font-display font-extrabold text-slate-800">LKR {{ number_format($totalExpenses, 2) }}</p>
-                            </div>
-                            <a href="{{ route('expenses.create') }}" class="inline-block mt-4 text-sm text-rose-600 font-bold hover:text-rose-700 transition-colors"><i class="fa-solid fa-plus mr-1"></i> Add Expense</a>
-                        </div>
+                            Income
+                        </h3>
+                        <p class="mt-4 text-4xl font-display font-bold text-green-600 tracking-tight group-hover:scale-105 transform origin-left transition-transform duration-300">
+                            {{ auth()->user()->formatCurrency($totalIncome) }}
+                        </p>
                     </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {{-- Charts (Premium preview or actual) --}}
-                        <div class="lg:col-span-2 bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
-                            <h3 class="font-display font-bold text-slate-800 text-xl mb-6">Income vs Expenses Overview</h3>
-                            @if(auth()->user()->hasRole('premium'))
-                                <div class="relative h-64 w-full">
-                                    <canvas id="cashFlowChart"></canvas>
-                                </div>
-                            @else
-                                <div class="relative h-64 w-full flex items-center justify-center bg-slate-50 rounded-2xl border border-dashed border-slate-300">
-                                    <div class="text-center p-6">
-                                        <i class="fa-solid fa-chart-bar text-4xl text-slate-300 mb-4"></i>
-                                        <h4 class="text-lg font-bold text-slate-700 mb-2">Advanced Analytics Locked</h4>
-                                        <p class="text-sm text-slate-500 mb-4">Upgrade to Premium to visualize your financial trends and categorize spending.</p>
-                                        <a href="{{ route('subscribe') }}" class="inline-block px-6 py-2 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition">Upgrade Now</a>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-
-                        {{-- Quick Actions --}}
-                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
-                            <h3 class="font-display font-bold text-slate-800 text-xl mb-6">Quick Actions</h3>
-                            <div class="grid grid-cols-2 gap-4">
-                                <a href="{{ route('expenses.create') }}" class="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-rose-50 hover:bg-rose-100 transition text-rose-700 border border-rose-100 group">
-                                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform"><i class="fa-solid fa-receipt"></i></div>
-                                    <span class="text-xs font-bold text-center">Expense</span>
-                                </a>
-                                <a href="{{ route('incomes.create') }}" class="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-emerald-50 hover:bg-emerald-100 transition text-emerald-700 border border-emerald-100 group">
-                                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform"><i class="fa-solid fa-money-bill-wave"></i></div>
-                                    <span class="text-xs font-bold text-center">Income</span>
-                                </a>
-                                <a href="{{ route('budgets.create') }}" class="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-indigo-50 hover:bg-indigo-100 transition text-indigo-700 border border-indigo-100 group">
-                                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform"><i class="fa-solid fa-wallet"></i></div>
-                                    <span class="text-xs font-bold text-center">Budget</span>
-                                </a>
-                                <a href="{{ route('savings-goals.create') }}" class="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-amber-50 hover:bg-amber-100 transition text-amber-700 border border-amber-100 group">
-                                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform"><i class="fa-solid fa-bullseye"></i></div>
-                                    <span class="text-xs font-bold text-center">Goal</span>
-                                </a>
+                </div>
+                
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-100 shadow-soft hover:shadow-glass hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -mr-12 -mt-12"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-sm font-semibold text-gray-500 tracking-wide flex items-center gap-2 uppercase">
+                            <div class="p-1.5 bg-red-100 rounded-lg text-red-600">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"></path></svg>
                             </div>
-                        </div>
+                            Expenses
+                        </h3>
+                        <p class="mt-4 text-4xl font-display font-bold text-red-600 tracking-tight group-hover:scale-105 transform origin-left transition-transform duration-300">
+                            {{ auth()->user()->formatCurrency($totalExpenses) }}
+                        </p>
                     </div>
+                </div>
+                
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-100 shadow-soft hover:shadow-glass hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-secondary-50 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -mr-12 -mt-12"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-sm font-semibold text-gray-500 tracking-wide flex items-center gap-2 uppercase">
+                            <div class="p-1.5 bg-secondary-100 rounded-lg text-secondary-600">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                            </div>
+                            Goals
+                        </h3>
+                        <p class="mt-4 text-4xl font-display font-bold text-gray-900 tracking-tight group-hover:scale-105 transform origin-left transition-transform duration-300">
+                            {{ $completedGoals }} <span class="text-lg font-normal text-gray-400">/ {{ $totalGoals }}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-                    {{-- Recent Transactions & Savings Goals --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        
-                        {{-- Recent Expenses --}}
-                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="font-display font-bold text-slate-800 text-xl">Recent Transactions</h3>
-                                <a href="{{ route('expenses.index') }}" class="text-sm text-indigo-600 font-bold hover:text-indigo-700 transition">View all <i class="fa-solid fa-arrow-right ml-1"></i></a>
-                            </div>
-
-                            @if($recentExpenses->count())
-                            <div class="space-y-4">
-                                @foreach($recentExpenses as $expense)
-                                <div class="flex justify-between items-center p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm text-lg text-slate-500">
-                                            <i class="fa-solid fa-tag"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-slate-800">{{ $expense->description ?? 'Expense' }}</p>
-                                            <p class="text-xs text-slate-500 font-medium">{{ $expense->category->name }} &bull; {{ $expense->date->format('M d, Y') }}</p>
-                                        </div>
-                                    </div>
-                                    <p class="font-display font-bold text-rose-600 text-lg">-LKR {{ number_format($expense->amount, 2) }}</p>
-                                </div>
-                                @endforeach
-                            </div>
-                            @else
-                            <div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
-                                <i class="fa-solid fa-receipt text-5xl mb-4 text-slate-300"></i>
-                                <p class="font-medium text-slate-600 mb-2">No transactions recorded yet.</p>
-                                <a href="{{ route('expenses.create') }}" class="text-sm text-indigo-600 font-bold hover:underline">Add your first expense</a>
-                            </div>
-                            @endif
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 animate-fade-in-up" style="animation-delay: 0.3s;">
+                <!-- Chart Section -->
+                <div class="lg:col-span-2 bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-100 shadow-soft">
+                    <h3 class="text-lg font-display font-bold text-gray-900 mb-6">Expense Categories</h3>
+                    @if($totalExpenses > 0 && count($categoryBreakdown) > 0)
+                        <div class="relative h-72 w-full flex justify-center">
+                            <canvas id="expenseChart"></canvas>
                         </div>
+                    @else
+                        <div class="h-64 flex flex-col items-center justify-center text-gray-500 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+                            <svg class="w-12 h-12 mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            <p class="text-sm font-medium">No expenses to display yet.</p>
+                        </div>
+                    @endif
+                </div>
 
-                        {{-- Savings Goals --}}
-                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="font-display font-bold text-slate-800 text-xl">Savings Goals</h3>
-                                <a href="{{ route('savings-goals.index') }}" class="text-sm text-indigo-600 font-bold hover:text-indigo-700 transition">Manage <i class="fa-solid fa-arrow-right ml-1"></i></a>
-                            </div>
-
-                            @if($savingsGoals->count())
-                            <div class="space-y-6">
-                                @foreach($savingsGoals as $goal)
-                                @php $pct = min(($goal->current_amount / max($goal->target_amount, 1)) * 100, 100); @endphp
+                <!-- Active Goals -->
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-100 shadow-soft flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-display font-bold text-gray-900">Active Goals</h3>
+                        <a href="{{ route('savings-goals.index') }}" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors bg-primary-50 px-3 py-1 rounded-full">View All</a>
+                    </div>
+                    
+                    @if(count($activeGoals) === 0)
+                        <div class="text-center py-12 text-gray-500 bg-gray-50/50 rounded-xl border border-dashed border-gray-200 flex-grow flex flex-col items-center justify-center">
+                            <svg class="w-10 h-10 mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <p class="text-sm font-medium">You have no active goals.</p>
+                            <a href="{{ route('savings-goals.create') }}" class="mt-4 bg-primary-600 hover:bg-primary-700 text-white shadow-md text-xs py-2 px-4 rounded-full transition-colors">Set a Goal</a>
+                        </div>
+                    @else
+                        <div class="space-y-6 flex-grow">
+                            @foreach($activeGoals as $goal)
                                 <div class="group">
-                                    <div class="flex justify-between items-end mb-2">
-                                        <div>
-                                            <p class="font-bold text-slate-800">{{ $goal->name }}</p>
-                                            <p class="text-xs text-slate-500 font-medium mt-0.5">LKR {{ number_format($goal->current_amount, 2) }} saved</p>
-                                        </div>
-                                        <div class="text-right">
-                                            <p class="font-display font-bold text-indigo-600">{{ round($pct) }}%</p>
-                                            <p class="text-xs text-slate-500 font-medium mt-0.5">of LKR {{ number_format($goal->target_amount, 2) }}</p>
-                                        </div>
+                                    <div class="flex justify-between text-sm mb-2">
+                                        <span class="font-medium text-gray-900 truncate" title="{{ $goal['name'] }}">
+                                            <a href="{{ route('savings-goals.show', $goal['id']) }}" class="hover:text-primary-600 transition-colors">{{ $goal['name'] }}</a>
+                                        </span>
+                                        <span class="text-primary-600 font-bold">{{ $goal['progress_percentage'] }}%</span>
                                     </div>
-                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                                        <div class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000 ease-out group-hover:brightness-110" style="width: {{ $pct }}%"></div>
+                                    <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-primary-400 to-secondary-500 h-2.5 rounded-full transform origin-left transition-transform duration-1000 group-hover:scale-x-105" style="width: {{ $goal['progress_percentage'] }}%"></div>
+                                    </div>
+                                    <div class="flex justify-between text-xs mt-2 text-gray-500 font-medium">
+                                        <span class="text-gray-700">{{ auth()->user()->formatCurrency($goal['total_paid']) }}</span>
+                                        <span>Target: {{ auth()->user()->formatCurrency($goal['target_amount']) }}</span>
                                     </div>
                                 </div>
-                                @endforeach
-                            </div>
-                            @else
-                            <div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
-                                <i class="fa-solid fa-bullseye text-5xl mb-4 text-slate-300"></i>
-                                <p class="font-medium text-slate-600 mb-2">No active savings goals.</p>
-                                <a href="{{ route('savings-goals.create') }}" class="text-sm text-indigo-600 font-bold hover:underline">Create a new goal</a>
-                            </div>
-                            @endif
+                            @endforeach
                         </div>
-
-                    </div>
+                    @endif
                 </div>
-            </template>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in-up" style="animation-delay: 0.4s;">
+                
+                <!-- Recent Income -->
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl border border-gray-100 shadow-soft overflow-hidden">
+                    <div class="px-6 py-5 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                        <h3 class="text-lg font-display font-bold text-gray-900 flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                            Recent Income
+                        </h3>
+                        <a href="{{ route('incomes.index') }}" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors bg-primary-50 px-3 py-1 rounded-full">View All</a>
+                    </div>
+                    @if(count($recentIncomes) === 0)
+                        <div class="p-8 text-center text-gray-500 text-sm">No recent income.</div>
+                    @else
+                        <ul class="divide-y divide-gray-50">
+                            @foreach($recentIncomes as $inc)
+                                <li class="px-6 py-4 flex justify-between items-center hover:bg-gray-50/50 transition-colors group cursor-pointer">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-600 group-hover:scale-110 transition-transform">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">{{ $inc->category->name ?? 'General Income' }}</p>
+                                            <p class="text-xs text-gray-400 mt-0.5 font-medium">{{ \Carbon\Carbon::parse($inc->date)->format('M d, Y') }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded-lg">
+                                        +{{ auth()->user()->formatCurrency($inc->amount) }}
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+
+                <!-- Recent Expenses -->
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl border border-gray-100 shadow-soft overflow-hidden">
+                    <div class="px-6 py-5 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                        <h3 class="text-lg font-display font-bold text-gray-900 flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                            Recent Expenses
+                        </h3>
+                        <a href="{{ route('expenses.index') }}" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors bg-primary-50 px-3 py-1 rounded-full">View All</a>
+                    </div>
+                    @if(count($recentExpenses) === 0)
+                        <div class="p-8 text-center text-gray-500 text-sm">No recent expenses.</div>
+                    @else
+                        <ul class="divide-y divide-gray-50">
+                            @foreach($recentExpenses as $exp)
+                                <li class="px-6 py-4 flex justify-between items-center hover:bg-gray-50/50 transition-colors group cursor-pointer">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">{{ $exp->category->name ?? 'General Expense' }}</p>
+                                            <p class="text-xs text-gray-400 mt-0.5 font-medium">{{ \Carbon\Carbon::parse($exp->date)->format('M d, Y') }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm font-bold text-red-600 bg-red-50 px-3 py-1 rounded-lg">
+                                        -{{ auth()->user()->formatCurrency($exp->amount) }}
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+
+            </div>
+
         </div>
     </div>
 
-    @if(auth()->user()->hasRole('premium'))
+    @if($totalExpenses > 0 && count($categoryBreakdown) > 0)
+    <!-- Load Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                const ctx = document.getElementById('cashFlowChart');
-                if(ctx) {
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                            datasets: [{
-                                label: 'Income',
-                                data: [4000, 4200, 4100, 4500, 4300, {{ $totalIncome }}],
-                                backgroundColor: 'rgba(16, 185, 129, 0.8)',
-                                borderRadius: 4,
-                            }, {
-                                label: 'Expenses',
-                                data: [2500, 2800, 2400, 3100, 2900, {{ $totalExpenses }}],
-                                backgroundColor: 'rgba(244, 63, 94, 0.8)',
-                                borderRadius: 4,
-                            }]
+    document.addEventListener('DOMContentLoaded', function() {
+        const breakdownData = @json($categoryBreakdown);
+        
+        if (breakdownData.length > 0 && document.getElementById('expenseChart')) {
+            const labels = breakdownData.map(item => item.category_name);
+            const data = breakdownData.map(item => parseFloat(item.total));
+            
+            // Premium brand colors matching Tailwind config
+            const colors = [
+                '#5380aa', // Main Blue
+                '#f4a54a', // Orange/Gold
+                '#759dc1', // Lighter Blue
+                '#f8c67f', // Lighter Orange
+                '#355375', // Darker Blue
+                '#e16e16', // Darker Orange
+                '#a5bed7', // Very light blue
+                '#bb5315'  // Very dark orange
+            ];
+
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors.slice(0, data.length),
+                        borderWidth: 3,
+                        borderColor: '#ffffff',
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: window.innerWidth < 640 ? 'bottom' : 'right',
+                            labels: {
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 13,
+                                    weight: '500'
+                                },
+                                usePointStyle: true,
+                                padding: 24,
+                                color: '#374151'
+                            }
                         },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8 } }
+                        tooltip: {
+                            backgroundColor: '#1f2937',
+                            titleFont: {
+                                family: "'Inter', sans-serif",
+                                size: 13
                             },
-                            scales: {
-                                y: { beginAtZero: true, grid: { borderDash: [4, 4] } },
-                                x: { grid: { display: false } }
+                            bodyFont: {
+                                family: "'Inter', sans-serif",
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += currencyCode + ' ' + context.parsed.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                                    }
+                                    return label;
+                                }
                             }
                         }
-                    });
+                    },
+                    cutout: '75%'
                 }
-            }, 850);
-        });
+            });
+        }
+    });
     </script>
     @endif
 </x-app-layout>

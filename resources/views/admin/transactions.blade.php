@@ -19,15 +19,22 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
-                        @foreach($expenses as $expense)
+                        @forelse($expenses as $expense)
                         <tr class="hover:bg-slate-50 transition">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-800">{{ $expense->user->name ?? '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{{ $expense->category->name ?? '-' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-rose-500">LKR {{ number_format($expense->amount, 2) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-rose-500">{{ auth()->user()?->formatCurrency($expense->amount) ?? '$' . number_format($expense->amount, 2) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{{ Str::limit($expense->description, 30) ?? '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{{ $expense->date->format('M d, Y') }}</td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-slate-400">
+                                <i class="fa-solid fa-receipt text-3xl mb-2 text-slate-300 block"></i>
+                                No transactions found.
+                            </td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
                 <div class="px-6 py-4 border-t border-slate-100">{{ $expenses->links() }}</div>

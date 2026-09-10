@@ -1,43 +1,56 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-2xl text-slate-800 leading-tight flex items-center gap-2" style="font-family: 'Outfit', sans-serif;">
-            <i class="fa-solid fa-bullseye text-indigo-600"></i> Create Goal
-        </h2>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('budgets.index') }}" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
+            </a>
+            <div>
+                <h2 class="font-bold text-2xl text-slate-800 dark:text-white leading-tight flex items-center gap-2 font-display">
+                    <i class="fa-solid fa-users text-blue-500"></i> Create Shared Budget
+                </h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Define a collective budget threshold for a category.</p>
+            </div>
+        </div>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+            <div class="card p-6 sm:p-8 bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl shadow-sm">
                 <x-validation-errors class="mb-4" />
-                <form method="POST" action="{{ route('budgets.store') }}">
+                
+                <form method="POST" action="{{ route('budgets.store') }}" class="space-y-6">
                     @csrf
-                    <div class="space-y-6">
-                        <div>
-                            <x-label for="category_id" value="Category" />
-                            <select id="category_id" name="category_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm" required>
-                                <option value="">Select a category</option>
-                                @foreach($categories as $cat)
-                                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <x-label for="amount" value="Goal Limit (LKR)" />
-                            <x-input id="amount" name="amount" type="number" step="0.01" class="mt-1 block w-full" required />
-                        </div>
-                        <div>
-                            <x-label for="period" value="Period" />
-                            <select id="period" name="period" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm" required>
-                                <option value="monthly">Monthly</option>
-                                <option value="weekly">Weekly</option>
-                                <option value="yearly">Yearly</option>
-                                <option value="daily">Daily</option>
-                            </select>
-                        </div>
-                        <div class="flex justify-end gap-3">
-                            <a href="{{ route('budgets.index') }}" class="px-6 py-3 border border-slate-200 rounded-xl font-bold text-slate-600 hover:bg-slate-50 transition">Cancel</a>
-                            <button type="submit" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/20"><i class="fa-solid fa-check mr-2"></i> Create Goal</button>
-                        </div>
+
+                    <div>
+                        <x-label for="category_id" value="Budget Category" />
+                        <select id="category_id" name="category_id" class="mt-1 block w-full border-slate-300 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 rounded-xl shadow-sm text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 transition" required>
+                            <option value="">Select a category</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" @selected(old('category_id') == $cat->id)>{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <x-label for="amount" value="Budget Limit ({{ auth()->user()?->currencyCode() ?? 'USD' }})" />
+                        <x-input id="amount" name="amount" type="number" step="0.01" min="0.01" class="mt-1 block w-full" value="{{ old('amount') }}" placeholder="0.00" required autofocus />
+                    </div>
+
+                    <div>
+                        <x-label for="period" value="Budget Period" />
+                        <select id="period" name="period" class="mt-1 block w-full border-slate-300 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 rounded-xl shadow-sm text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 transition" required>
+                            <option value="monthly" @selected(old('period') == 'monthly')>Monthly</option>
+                            <option value="weekly" @selected(old('period') == 'weekly')>Weekly</option>
+                            <option value="yearly" @selected(old('period') == 'yearly')>Yearly</option>
+                            <option value="daily" @selected(old('period') == 'daily')>Daily</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                        <a href="{{ route('budgets.index') }}" class="btn-secondary">Cancel</a>
+                        <button type="submit" class="btn-primary">
+                            <i class="fa-solid fa-check mr-2"></i> Create Shared Budget
+                        </button>
                     </div>
                 </form>
             </div>

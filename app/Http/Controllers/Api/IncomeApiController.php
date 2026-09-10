@@ -12,19 +12,26 @@ class IncomeApiController extends Controller
 {
     public function index(Request $request)
     {
+        $validated = $request->validate([
+            'category_id' => ['nullable', 'integer'],
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date', 'after_or_equal:from'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
         $query = auth()->user()->incomes()->with('category');
 
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
+        if (isset($validated['category_id'])) {
+            $query->where('category_id', $validated['category_id']);
         }
-        if ($request->filled('from')) {
-            $query->whereDate('date', '>=', $request->from);
+        if (! empty($validated['from'])) {
+            $query->whereDate('date', '>=', $validated['from']);
         }
-        if ($request->filled('to')) {
-            $query->whereDate('date', '<=', $request->to);
+        if (! empty($validated['to'])) {
+            $query->whereDate('date', '<=', $validated['to']);
         }
 
-        return IncomeResource::collection($query->orderBy('date', 'desc')->paginate(20));
+        return IncomeResource::collection($query->orderBy('date', 'desc')->paginate($validated['per_page'] ?? 20));
     }
 
     public function store(StoreIncomeRequest $request)

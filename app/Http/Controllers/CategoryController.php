@@ -10,7 +10,14 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = auth()->user()->categories()->latest()->paginate(15);
+        $categories = Category::where(function ($q) {
+            $q->whereNull('user_id')
+              ->orWhere('user_id', auth()->id());
+        })
+        ->orderByRaw('CASE WHEN user_id IS NULL THEN 0 ELSE 1 END')
+        ->latest()
+        ->paginate(15);
+
         return view('categories.index', compact('categories'));
     }
 

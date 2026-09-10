@@ -10,11 +10,13 @@ use App\Http\Controllers\Api\IncomeApiController;
 use App\Http\Controllers\Api\SavingsGoalApiController;
 
 // Public API routes
-Route::post('/register', [AuthApiController::class, 'register']);
-Route::post('/login',    [AuthApiController::class, 'login']);
+Route::middleware('throttle:10,1')->group(function () {
+    Route::post('/register', [AuthApiController::class, 'register']);
+    Route::post('/login',    [AuthApiController::class, 'login']);
+});
 
 // Protected API routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'check.status', 'throttle:60,1'])->group(function () {
     Route::post('/logout',     [AuthApiController::class, 'logout']);
     Route::post('/logout-all', [AuthApiController::class, 'logoutAll']);
     Route::get('/user',        [AuthApiController::class, 'profile']);

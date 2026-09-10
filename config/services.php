@@ -37,7 +37,7 @@ return [
 
     'stripe' => [
         'key' => env('STRIPE_KEY'),
-        'secret' => env('STRIPE_SECRET', 'sk_test_mock_secret_replace_me'),
+        'secret' => env('STRIPE_SECRET'),
     ],
 
 ];

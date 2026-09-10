@@ -64,22 +64,21 @@
             <x-label for="email" value="{{ __('Email') }}" />
             <x-input id="email" type="email" class="mt-1 block w-full" wire:model="state.email" required autocomplete="username" />
             <x-input-error for="email" class="mt-2" />
+        </div>
 
-            @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::emailVerification()) && ! $this->user->hasVerifiedEmail())
-                <p class="text-sm mt-2">
-                    {{ __('Your email address is unverified.') }}
-
-                    <button type="button" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" wire:click.prevent="sendEmailVerification">
-                        {{ __('Click here to re-send the verification email.') }}
-                    </button>
-                </p>
-
-                @if ($this->verificationLinkSent)
-                    <p class="mt-2 font-medium text-sm text-green-600">
-                        {{ __('A new verification link has been sent to your email address.') }}
-                    </p>
-                @endif
-            @endif
+        <!-- Currency -->
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="currency" value="{{ __('Preferred Currency') }}" />
+            <select id="currency" wire:model="state.currency" class="mt-1 block w-full border-slate-300 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 rounded-xl shadow-sm text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 transition" required>
+                <option value="USD" {{ (old('currency', $this->user->currency ?? 'USD') === 'USD') ? 'selected' : '' }}>USD - US Dollar</option>
+                <option value="EUR" {{ (old('currency', $this->user->currency ?? 'USD') === 'EUR') ? 'selected' : '' }}>EUR - Euro</option>
+                <option value="GBP" {{ (old('currency', $this->user->currency ?? 'USD') === 'GBP') ? 'selected' : '' }}>GBP - British Pound</option>
+                <option value="LKR" {{ (old('currency', $this->user->currency ?? 'USD') === 'LKR') ? 'selected' : '' }}>LKR - Sri Lankan Rupee</option>
+                <option value="AUD" {{ (old('currency', $this->user->currency ?? 'USD') === 'AUD') ? 'selected' : '' }}>AUD - Australian Dollar</option>
+                <option value="CAD" {{ (old('currency', $this->user->currency ?? 'USD') === 'CAD') ? 'selected' : '' }}>CAD - Canadian Dollar</option>
+                <option value="JPY" {{ (old('currency', $this->user->currency ?? 'USD') === 'JPY') ? 'selected' : '' }}>JPY - Japanese Yen</option>
+            </select>
+            <x-input-error for="currency" class="mt-2" />
         </div>
     </x-slot>
 

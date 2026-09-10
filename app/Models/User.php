@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -33,6 +32,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'status',
+        'currency',
     ];
 
     /**
@@ -71,7 +73,7 @@ class User extends Authenticatable
 
     public function categories() { return $this->hasMany(Category::class); }
     public function budgets() { return $this->hasMany(Budget::class); }
-    public function sharedBudgets() { return $this->belongsToMany(Budget::class); }
+    public function sharedBudgets() { return $this->belongsToMany(Budget::class, 'budget_user'); }
     public function expenses() { return $this->hasMany(Expense::class); }
     public function incomes() { return $this->hasMany(Income::class); }
     public function savingsGoals() { return $this->hasMany(SavingsGoal::class); }
@@ -79,7 +81,56 @@ class User extends Authenticatable
     public function paymentTransactions() { return $this->hasMany(PaymentTransaction::class); }
 
     public function isAdmin() {
-        return $this->role === 'admin';
+        return $this->role === 'admin' || $this->hasRole('admin');
+    }
+
+    public function isPremium() {
+        return $this->role === 'premium' || $this->hasRole('premium');
+    }
+
+    public function isBlocked() {
+        return $this->status === 'blocked';
+    }
+
+    public function currencyCode(): string
+    {
+        return strtoupper($this->currency ?? 'USD');
+    }
+
+    public function currencySymbol(): string
+    {
+        return match ($this->currencyCode()) {
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'JPY' => '¥',
+            'AUD', 'CAD', 'NZD' => '$',
+            'LKR' => 'LKR',
+            default => strtoupper($this->currencyCode()),
+        };
+    }
+
+    public function formatCurrency(float $amount, int $decimals = 2): string
+    {
+        $code = $this->currencyCode();
+        $formatted = number_format($amount, $decimals, '.', ',');
+
+        return match ($code) {
+            'JPY' => '¥ ' . number_format($amount, 0, '.', ','),
+            'LKR' => 'LKR ' . $formatted,
+            'USD', 'EUR', 'GBP', 'AUD', 'CAD', 'NZD', 'CHF', 'SEK', 'NOK', 'DKK', 'SGD', 'HKD', 'AED', 'SAR', 'CNY' => $this->currencySymbol() . ' ' . $formatted,
+            default => $code . ' ' . $formatted,
+        };
+    }
+
+    public function currencyLabel(): string
+    {
+        return $this->currencyCode();
+    }
+
+    public function formatCurrencyShort(float $amount): string
+    {
+        return $this->formatCurrency($amount, 2);
     }
 
     /**

@@ -7,6 +7,20 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## BudgetX database setup
+
+BudgetX uses MySQL or MariaDB in the application environment. With XAMPP running,
+create a database named `budgetx`, copy `.env.example` to `.env`, generate an
+application key, and run:
+
+```text
+php artisan migrate --seed
+```
+
+The complete schema and non-sensitive reference seed data are available in
+`database/budgetx.sql`. Configure Stripe and other integrations only through
+local environment variables; never add credentials to the SQL dump or source control.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
+            'check.status' => \App\Http\Middleware\CheckUserStatus::class,
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        ]);
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckUserStatus::class,
         ]);
         $middleware->statefulApi();
     })

@@ -26,15 +26,16 @@ class ExpenseController extends Controller
             $query->whereDate('date', '<=', $request->to);
         }
 
+        $totalAmount = (clone $query)->sum('amount');
         $expenses    = $query->orderBy('date', 'desc')->paginate(15)->withQueryString();
         $categories  = Category::where('type', 'expense')->where(fn($q) => $q->whereNull('user_id')->orWhere('user_id', auth()->id()))->get();
-        $totalAmount = $query->sum('amount');
 
         return view('expenses.index', compact('expenses', 'categories', 'totalAmount'));
     }
 
     public function create()
     {
+        Category::ensureSystemDefaults();
         $categories = Category::where('type', 'expense')->where(fn($q) => $q->whereNull('user_id')->orWhere('user_id', auth()->id()))->get();
         return view('expenses.create', compact('categories'));
     }

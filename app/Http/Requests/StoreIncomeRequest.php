@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreIncomeRequest extends FormRequest
 {
@@ -14,10 +15,20 @@ class StoreIncomeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => 'required|exists:categories,id',
-            'amount'      => 'required|numeric|min:0.01',
-            'date'        => 'required|date|before_or_equal:today',
-            'description' => 'nullable|string|max:500',
+            'category_id' => [
+                'required',
+                'integer',
+                Rule::exists('categories', 'id')->where(function ($query) {
+                    $query->where('type', 'income')
+                        ->where(function ($query) {
+                            $query->whereNull('user_id')
+                                ->orWhere('user_id', $this->user()?->id);
+                        });
+                }),
+            ],
+            'amount' => ['required', 'numeric', 'min:0.01'],
+            'date' => ['required', 'date', 'before_or_equal:today'],
+            'description' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

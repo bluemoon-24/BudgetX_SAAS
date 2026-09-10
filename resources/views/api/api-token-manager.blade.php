@@ -61,27 +61,27 @@
 
                 <!-- API Token List -->
                 <x-slot name="content">
-                    <div class="space-y-6">
+                    <div class="space-y-3">
                         @foreach ($this->user->tokens->sortBy('name') as $token)
-                            <div class="flex items-center justify-between">
-                                <div class="break-all">
-                                    {{ $token->name }}
+                            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-700/60">
+                                <div class="break-all font-semibold text-slate-800 dark:text-slate-200">
+                                    <i class="fa-solid fa-key mr-2 text-primary-500 text-xs"></i> {{ $token->name }}
                                 </div>
 
-                                <div class="flex items-center ms-2">
+                                <div class="flex items-center ms-2 gap-4">
                                     @if ($token->last_used_at)
-                                        <div class="text-sm text-gray-400">
+                                        <div class="text-xs text-slate-400">
                                             {{ __('Last used') }} {{ $token->last_used_at->diffForHumans() }}
                                         </div>
                                     @endif
 
                                     @if (Laravel\Jetstream\Jetstream::hasPermissions())
-                                        <button class="cursor-pointer ms-6 text-sm text-gray-400 underline" wire:click="manageApiTokenPermissions({{ $token->id }})">
+                                        <button class="cursor-pointer text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline" wire:click="manageApiTokenPermissions({{ $token->id }})">
                                             {{ __('Permissions') }}
                                         </button>
                                     @endif
 
-                                    <button class="cursor-pointer ms-6 text-sm text-red-500" wire:click="confirmApiTokenDeletion({{ $token->id }})">
+                                    <button class="cursor-pointer text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline" wire:click="confirmApiTokenDeletion({{ $token->id }})">
                                         {{ __('Delete') }}
                                     </button>
                                 </div>
@@ -105,7 +105,7 @@
             </div>
 
             <x-input x-ref="plaintextToken" type="text" readonly :value="$plainTextToken"
-                class="mt-4 bg-gray-100 px-4 py-2 rounded font-mono text-sm text-gray-500 w-full break-all"
+                class="mt-4 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-3 rounded-xl font-mono text-sm text-slate-800 dark:text-slate-200 w-full break-all select-all"
                 autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
                 @showing-token-modal.window="setTimeout(() => $refs.plaintextToken.select(), 250)"
             />

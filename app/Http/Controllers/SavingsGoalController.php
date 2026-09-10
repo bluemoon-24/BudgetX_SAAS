@@ -28,6 +28,9 @@ class SavingsGoalController extends Controller
     public function show(SavingsGoal $savingsGoal)
     {
         $this->authorize('view', $savingsGoal);
+        $savingsGoal->load(['payments' => function ($q) {
+            $q->latest('payment_date');
+        }]);
         return view('savings-goals.show', compact('savingsGoal'));
     }
 

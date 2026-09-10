@@ -9,7 +9,7 @@
             <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
                 <h3 class="text-xl font-bold text-slate-800 mb-1">{{ $expense->category->name ?? 'Expense' }}</h3>
                 <p class="text-sm text-slate-400 mb-6">{{ $expense->date->format('M d, Y') }}</p>
-                <p class="text-3xl font-extrabold text-rose-500 mb-2" style="font-family: 'Outfit', sans-serif;">LKR {{ number_format($expense->amount, 2) }}</p>
+                <p class="text-3xl font-extrabold text-rose-500 mb-2" style="font-family: 'Outfit', sans-serif;">{{ auth()->user()?->formatCurrency($expense->amount) ?? '$' . number_format($expense->amount, 2) }}</p>
                 @if($expense->description)
                     <p class="text-slate-600 mb-6">{{ $expense->description }}</p>
                 @endif

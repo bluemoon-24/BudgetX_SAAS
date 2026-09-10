@@ -12,11 +12,36 @@ class BudgetApiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = auth()->user()->budgets()->with('category');
-        
-        $query = $this->applyFilters($query, $request, ['name', 'amount']);
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'filter' => ['nullable', 'array'],
+            'filter.period' => ['nullable', 'in:daily,weekly,monthly,yearly'],
+            'filter.category_id' => ['nullable', 'integer'],
+            'sort' => ['nullable', 'string', 'max:100'],
+        ]);
 
-        $budgets = $query->paginate($request->input('per_page', 20));
+        $query = auth()->user()->budgets()->with('category');
+
+        if (! empty($validated['search'])) {
+            $searchTerm = $validated['search'];
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('amount', 'like', "%{$searchTerm}%")
+                  ->orWhereHas('category', function ($catQ) use ($searchTerm) {
+                      $catQ->where('name', 'like', "%{$searchTerm}%");
+                  });
+            });
+        }
+
+        $query = $this->applyFilters(
+            $query,
+            $request,
+            [],
+            ['period', 'category_id'],
+            ['amount', 'period', 'created_at']
+        );
+
+        $budgets = $query->paginate($validated['per_page'] ?? 20);
         
         return BudgetResource::collection($budgets)->additional([
             'success' => true,

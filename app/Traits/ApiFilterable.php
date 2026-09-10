@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 
 trait ApiFilterable
@@ -13,16 +14,24 @@ trait ApiFilterable
      * @param  Builder  $query
      * @param  Request  $request
      * @param  array    $searchableColumns
+     * @param  array    $filterableColumns
+     * @param  array    $sortableColumns
      * @return Builder
      */
-    protected function applyFilters(Builder $query, Request $request, array $searchableColumns = []): Builder
+    protected function applyFilters(
+        Builder|Relation $query,
+        Request $request,
+        array $searchableColumns = [],
+        array $filterableColumns = [],
+        array $sortableColumns = []
+    ): Builder|Relation
     {
         // 1. Filtering: ?filter[status]=active&filter[category_id]=5
         if ($request->has('filter') && is_array($request->input('filter'))) {
             foreach ($request->input('filter') as $field => $value) {
-                // Basic implementation: ensure exact match. 
-                // For advanced filters (like operators), you'd expand this.
-                $query->where($field, $value);
+                if (in_array($field, $filterableColumns, true)) {
+                    $query->where($field, $value);
+                }
             }
         }
 
@@ -45,7 +54,10 @@ trait ApiFilterable
                     $direction = 'desc';
                     $sortColumn = ltrim($sortColumn, '-');
                 }
-                $query->orderBy($sortColumn, $direction);
+
+                if (in_array($sortColumn, $sortableColumns, true)) {
+                    $query->orderBy($sortColumn, $direction);
+                }
             }
         }
 
