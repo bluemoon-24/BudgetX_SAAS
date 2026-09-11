@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ExpenseResource;
 use App\Http\Requests\StoreExpenseRequest;
+use App\Http\Resources\ExpenseResource;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 
@@ -37,12 +37,14 @@ class ExpenseApiController extends Controller
     public function store(StoreExpenseRequest $request)
     {
         $expense = auth()->user()->expenses()->create($request->validated());
+
         return new ExpenseResource($expense->load('category'));
     }
 
     public function show(Expense $expense)
     {
         $this->authorize('view', $expense);
+
         return new ExpenseResource($expense->load('category'));
     }
 
@@ -50,6 +52,7 @@ class ExpenseApiController extends Controller
     {
         $this->authorize('update', $expense);
         $expense->update($request->validated());
+
         return new ExpenseResource($expense->load('category'));
     }
 
@@ -57,6 +60,7 @@ class ExpenseApiController extends Controller
     {
         $this->authorize('delete', $expense);
         $expense->delete();
+
         return response()->json(['message' => 'Expense deleted.'], 200);
     }
 }

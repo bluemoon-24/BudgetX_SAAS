@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\StripeController;
 use App\Models\PaymentTransaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Spatie\Permission\Models\Role;
+use Stripe\StripeClient;
 use Tests\TestCase;
 
 class StripePaymentRegressionTest extends TestCase
@@ -162,9 +164,9 @@ class StripePaymentRegressionTest extends TestCase
                     && $payload['line_items'][0]['price_data']['unit_amount'] === ($plan === 'yearly' ? 500000 : 50000)
                     && $payload['line_items'][0]['price_data']['recurring']['interval'] === ($plan === 'yearly' ? 'year' : 'month');
             })
-            ->andReturn((object) ['url' => 'https://checkout.stripe.test/session_' . $plan]);
+            ->andReturn((object) ['url' => 'https://checkout.stripe.test/session_'.$plan]);
 
-        $client = Mockery::mock(\Stripe\StripeClient::class);
+        $client = Mockery::mock(StripeClient::class);
         $client->checkout = (object) ['sessions' => $sessions];
         $this->bindStripeClient($client);
     }
@@ -194,7 +196,7 @@ class StripePaymentRegressionTest extends TestCase
 
         $sessions = Mockery::mock();
         $sessions->shouldReceive('retrieve')->andReturn($session);
-        $client = Mockery::mock(\Stripe\StripeClient::class);
+        $client = Mockery::mock(StripeClient::class);
         $client->checkout = (object) ['sessions' => $sessions];
         $this->bindStripeClient($client);
     }
@@ -204,18 +206,18 @@ class StripePaymentRegressionTest extends TestCase
         config(['services.stripe.secret' => 'sk_test_valid_for_tests']);
         $sessions = Mockery::mock();
         $sessions->shouldReceive('retrieve')->once()->andThrow(new \RuntimeException('Stripe API unavailable.'));
-        $client = Mockery::mock(\Stripe\StripeClient::class);
+        $client = Mockery::mock(StripeClient::class);
         $client->checkout = (object) ['sessions' => $sessions];
         $this->bindStripeClient($client);
     }
 
-    private function bindStripeClient(\Stripe\StripeClient $client): void
+    private function bindStripeClient(StripeClient $client): void
     {
-        $controller = Mockery::mock(\App\Http\Controllers\StripeController::class)->makePartial();
+        $controller = Mockery::mock(StripeController::class)->makePartial();
         $controller->shouldAllowMockingProtectedMethods()
             ->shouldReceive('stripeClient')
             ->andReturn($client);
-        $this->app->instance(\App\Http\Controllers\StripeController::class, $controller);
+        $this->app->instance(StripeController::class, $controller);
     }
 
     public function test_cancel_route_is_accessible_to_authenticated_user(): void

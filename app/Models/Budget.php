@@ -1,17 +1,42 @@
 <?php
+
 namespace App\Models;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Builder;
-class Budget extends Model {
+
+class Budget extends Model
+{
     use HasFactory;
+
     protected $fillable = ['user_id', 'category_id', 'amount', 'period'];
-    public function user() { return $this->belongsTo(User::class); }
-    public function category() { return $this->belongsTo(Category::class); }
-    public function collaborators() { return $this->belongsToMany(User::class, 'budget_user'); }
-    public function expenses() { return $this->hasMany(Expense::class, 'category_id', 'category_id'); }
-    public function contributions() { return $this->hasMany(BudgetContribution::class); }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function collaborators()
+    {
+        return $this->belongsToMany(User::class, 'budget_user');
+    }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class, 'category_id', 'category_id');
+    }
+
+    public function contributions()
+    {
+        return $this->hasMany(BudgetContribution::class);
+    }
 
     public function getSpentAmountAttribute(): float
     {
@@ -58,7 +83,7 @@ class Budget extends Model {
     protected function formattedAmount(): Attribute
     {
         return Attribute::make(
-            get: fn () => '$' . number_format($this->amount, 2),
+            get: fn () => '$'.number_format($this->amount, 2),
         );
     }
 }

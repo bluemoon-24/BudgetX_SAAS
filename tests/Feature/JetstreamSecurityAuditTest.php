@@ -17,7 +17,7 @@ class JetstreamSecurityAuditTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        (new UpdateUserPassword())->update($user, [
+        (new UpdateUserPassword)->update($user, [
             'current_password' => 'password',
             'password' => 'new-strong-password',
             'password_confirmation' => 'new-strong-password',

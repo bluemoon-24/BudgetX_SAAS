@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\IncomeResource;
 use App\Http\Requests\StoreIncomeRequest;
+use App\Http\Resources\IncomeResource;
 use App\Models\Income;
 use Illuminate\Http\Request;
 
@@ -37,12 +37,14 @@ class IncomeApiController extends Controller
     public function store(StoreIncomeRequest $request)
     {
         $income = auth()->user()->incomes()->create($request->validated());
+
         return new IncomeResource($income->load('category'));
     }
 
     public function show(Income $income)
     {
         $this->authorize('view', $income);
+
         return new IncomeResource($income->load('category'));
     }
 
@@ -50,6 +52,7 @@ class IncomeApiController extends Controller
     {
         $this->authorize('update', $income);
         $income->update($request->validated());
+
         return new IncomeResource($income->load('category'));
     }
 
@@ -57,6 +60,7 @@ class IncomeApiController extends Controller
     {
         $this->authorize('delete', $income);
         $income->delete();
+
         return response()->json(['message' => 'Income deleted.'], 200);
     }
 }

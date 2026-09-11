@@ -14,7 +14,7 @@ class BudgetCollaboratorController extends Controller
 
         // Enforce Premium plan for sharing
         $user = auth()->user();
-        if (!$user->hasRole('premium') && !$user->hasRole('admin') && !$user->isAdmin()) {
+        if (! $user->hasRole('premium') && ! $user->hasRole('admin') && ! $user->isAdmin()) {
             return back()->with('error', 'Only Premium users can share goals. Please upgrade to invite collaborators!');
         }
 
@@ -37,15 +37,15 @@ class BudgetCollaboratorController extends Controller
 
         $budget->collaborators()->attach($collaborator->id);
 
-        return back()->with('success', $collaborator->name . ' has been added as a collaborator!');
+        return back()->with('success', $collaborator->name.' has been added as a collaborator!');
     }
 
     public function destroy(Budget $budget, User $user)
     {
         $this->authorize('delete', $budget); // Only owner can remove collaborators
-        
+
         $budget->collaborators()->detach($user->id);
 
-        return back()->with('success', $user->name . ' has been removed from this goal.');
+        return back()->with('success', $user->name.' has been removed from this goal.');
     }
 }

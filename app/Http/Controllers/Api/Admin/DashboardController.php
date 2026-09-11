@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Budget;
 use App\Models\Expense;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller

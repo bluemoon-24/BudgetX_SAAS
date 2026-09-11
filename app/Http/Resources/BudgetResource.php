@@ -10,11 +10,11 @@ class BudgetResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'         => $this->id,
-            'amount'     => $this->amount,
-            'period'     => $this->period,
-            'category'   => [
-                'id'   => $this->category->id,
+            'id' => $this->id,
+            'amount' => number_format((float) $this->amount, 2, '.', ''),
+            'period' => $this->period,
+            'category' => [
+                'id' => $this->category->id,
                 'name' => $this->category->name,
                 'type' => $this->category->type,
             ],

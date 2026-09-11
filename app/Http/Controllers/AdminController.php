@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Expense;
-use App\Models\Income;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-
     public function index()
     {
         $totalUsers = User::count();
@@ -33,7 +30,7 @@ class AdminController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -46,6 +43,7 @@ class AdminController extends Controller
         }
 
         $users = $query->latest()->paginate(20)->withQueryString();
+
         return view('admin.users', compact('users'));
     }
 
@@ -67,6 +65,7 @@ class AdminController extends Controller
             $user->removeRole('admin');
         }
         $user->save();
+
         return back()->with('success', "User role updated to {$user->role}.");
     }
 
@@ -80,6 +79,7 @@ class AdminController extends Controller
         $user->save();
 
         $statusLabel = $user->status === 'blocked' ? 'blocked' : 'activated';
+
         return back()->with('success', "User {$user->name} has been {$statusLabel}.");
     }
 }

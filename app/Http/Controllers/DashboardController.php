@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Expense;
-use App\Models\Income;
-use App\Models\SavingsGoal;
 
 class DashboardController extends Controller
 {
@@ -40,15 +37,18 @@ class DashboardController extends Controller
         $totalGoals = $allGoals->count();
         $completedGoals = $allGoals->filter(function ($g) {
             $paid = $g->payments->sum('amount');
+
             return $g->target_amount > 0 && $paid >= $g->target_amount;
         })->count();
 
         $activeGoals = $allGoals->filter(function ($g) {
             $paid = $g->payments->sum('amount');
+
             return $g->target_amount > 0 && $paid < $g->target_amount;
         })->take(3)->map(function ($g) {
             $paid = $g->payments->sum('amount');
             $pct = $g->target_amount > 0 ? min(round(($paid / $g->target_amount) * 100), 100) : 0;
+
             return [
                 'id' => $g->id,
                 'name' => $g->name,

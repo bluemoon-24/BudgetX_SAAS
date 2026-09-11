@@ -17,4 +17,3 @@ trait PasswordValidationRules
         return ['required', 'string', new Password, 'confirmed'];
     }
 }
-

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CategoryResource;
 use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
@@ -20,7 +20,7 @@ class CategoryApiController extends Controller
 
         $query = Category::where(function ($q) {
             $q->where('user_id', auth()->id())
-              ->orWhereNull('user_id');
+                ->orWhereNull('user_id');
         });
 
         if (! empty($validated['search'])) {

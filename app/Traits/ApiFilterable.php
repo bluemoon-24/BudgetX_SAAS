@@ -12,10 +12,6 @@ trait ApiFilterable
      * Apply sorting, filtering, and searching to a query builder based on request parameters.
      *
      * @param  Builder  $query
-     * @param  Request  $request
-     * @param  array    $searchableColumns
-     * @param  array    $filterableColumns
-     * @param  array    $sortableColumns
      * @return Builder
      */
     protected function applyFilters(
@@ -24,8 +20,7 @@ trait ApiFilterable
         array $searchableColumns = [],
         array $filterableColumns = [],
         array $sortableColumns = []
-    ): Builder|Relation
-    {
+    ): Builder|Relation {
         // 1. Filtering: ?filter[status]=active&filter[category_id]=5
         if ($request->has('filter') && is_array($request->input('filter'))) {
             foreach ($request->input('filter') as $field => $value) {
@@ -36,7 +31,7 @@ trait ApiFilterable
         }
 
         // 2. Searching: ?search=keyword
-        if ($request->has('search') && !empty($searchableColumns)) {
+        if ($request->has('search') && ! empty($searchableColumns)) {
             $searchTerm = $request->input('search');
             $query->where(function (Builder $q) use ($searchTerm, $searchableColumns) {
                 foreach ($searchableColumns as $column) {

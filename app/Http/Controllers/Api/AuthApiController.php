@@ -7,7 +7,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
 
 class AuthApiController extends Controller
 {
@@ -17,21 +17,21 @@ class AuthApiController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
             'device_name' => 'nullable|string|max:100',
         ]);
 
-        $user  = User::create([
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role'     => 'user',
+            'role' => 'user',
         ]);
 
         // Assign default role if using spatie
-        if (\Spatie\Permission\Models\Role::where('name', 'user')->exists()) {
+        if (Role::where('name', 'user')->exists()) {
             $user->assignRole('user');
         }
 
@@ -39,7 +39,7 @@ class AuthApiController extends Controller
         $token = $user->createToken($device, ['*'])->plainTextToken;
 
         return $this->successResponse([
-            'user'  => new UserResource($user),
+            'user' => new UserResource($user),
             'token' => $token,
         ], 'User registered successfully', 201);
     }
@@ -50,8 +50,8 @@ class AuthApiController extends Controller
     public function login(Request $request)
     {
         $validated = $request->validate([
-            'email'       => 'required|email',
-            'password'    => 'required',
+            'email' => 'required|email',
+            'password' => 'required',
             'device_name' => 'nullable|string|max:100',
         ]);
 
@@ -65,7 +65,7 @@ class AuthApiController extends Controller
         $token = $user->createToken($device, ['*'])->plainTextToken;
 
         return $this->successResponse([
-            'user'  => new UserResource($user),
+            'user' => new UserResource($user),
             'token' => $token,
         ], 'Logged in successfully');
     }

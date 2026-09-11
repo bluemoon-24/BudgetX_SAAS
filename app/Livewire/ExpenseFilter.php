@@ -14,8 +14,11 @@ class ExpenseFilter extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $selectedCategory = '';
+
     public string $dateFrom = '';
+
     public string $dateTo = '';
 
     protected $queryString = [
@@ -88,30 +91,30 @@ class ExpenseFilter extends Component
         $user = auth()->user();
 
         $categories = Category::where('type', 'expense')
-            ->where(fn($q) => $q->whereNull('user_id')->orWhere('user_id', $user->id))
+            ->where(fn ($q) => $q->whereNull('user_id')->orWhere('user_id', $user->id))
             ->get();
 
         $query = Expense::with('category')
             ->where('user_id', $user->id);
 
-        if (!empty($this->search)) {
+        if (! empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('description', 'like', '%' . $this->search . '%')
-                  ->orWhereHas('category', function ($catQuery) {
-                      $catQuery->where('name', 'like', '%' . $this->search . '%');
-                  });
+                $q->where('description', 'like', '%'.$this->search.'%')
+                    ->orWhereHas('category', function ($catQuery) {
+                        $catQuery->where('name', 'like', '%'.$this->search.'%');
+                    });
             });
         }
 
-        if (!empty($this->selectedCategory)) {
+        if (! empty($this->selectedCategory)) {
             $query->where('category_id', $this->selectedCategory);
         }
 
-        if (!empty($this->dateFrom)) {
+        if (! empty($this->dateFrom)) {
             $query->whereDate('date', '>=', $this->dateFrom);
         }
 
-        if (!empty($this->dateTo)) {
+        if (! empty($this->dateTo)) {
             $query->whereDate('date', '<=', $this->dateTo);
         }
 

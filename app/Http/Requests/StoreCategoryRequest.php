@@ -6,13 +6,16 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreCategoryRequest extends FormRequest
 {
-    public function authorize(): bool { return true; }
+    public function authorize(): bool
+    {
+        return true;
+    }
 
     public function rules(): array
     {
         return [
-            'name'  => 'required|string|max:100',
-            'type'  => 'required|in:income,expense',
+            'name' => 'required|string|max:100',
+            'type' => 'required|in:income,expense',
             'color' => 'nullable|string|max:20',
         ];
     }

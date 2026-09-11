@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\BudgetResource;
 use App\Http\Requests\StoreBudgetRequest;
+use App\Http\Resources\BudgetResource;
 use App\Models\Budget;
 use Illuminate\Http\Request;
 
@@ -27,9 +27,9 @@ class BudgetApiController extends Controller
             $searchTerm = $validated['search'];
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('amount', 'like', "%{$searchTerm}%")
-                  ->orWhereHas('category', function ($catQ) use ($searchTerm) {
-                      $catQ->where('name', 'like', "%{$searchTerm}%");
-                  });
+                    ->orWhereHas('category', function ($catQ) use ($searchTerm) {
+                        $catQ->where('name', 'like', "%{$searchTerm}%");
+                    });
             });
         }
 
@@ -42,22 +42,24 @@ class BudgetApiController extends Controller
         );
 
         $budgets = $query->paginate($validated['per_page'] ?? 20);
-        
+
         return BudgetResource::collection($budgets)->additional([
             'success' => true,
-            'message' => 'Budgets retrieved successfully.'
+            'message' => 'Budgets retrieved successfully.',
         ]);
     }
 
     public function store(StoreBudgetRequest $request)
     {
         $budget = auth()->user()->budgets()->create($request->validated());
+
         return $this->successResponse(new BudgetResource($budget->load('category')), 'Budget created successfully.', 201);
     }
 
     public function show(Budget $budget)
     {
         $this->authorize('view', $budget);
+
         return $this->successResponse(new BudgetResource($budget->load('category')), 'Budget retrieved successfully.');
     }
 
@@ -65,6 +67,7 @@ class BudgetApiController extends Controller
     {
         $this->authorize('update', $budget);
         $budget->update($request->validated());
+
         return $this->successResponse(new BudgetResource($budget->load('category')), 'Budget updated successfully.');
     }
 
@@ -72,6 +75,7 @@ class BudgetApiController extends Controller
     {
         $this->authorize('delete', $budget);
         $budget->delete();
+
         return $this->successResponse(null, 'Budget deleted successfully.');
     }
 }

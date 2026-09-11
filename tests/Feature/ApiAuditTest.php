@@ -163,7 +163,7 @@ class ApiAuditTest extends TestCase
 
         Sanctum::actingAs($other, ['*']);
 
-        $this->getJson('/api/categories/' . $category->id)->assertStatus(403);
+        $this->getJson('/api/categories/'.$category->id)->assertStatus(403);
     }
 
     public function test_expense_creation_validates_required_fields(): void

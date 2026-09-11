@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Expense;
-use App\Models\Income;
 use Illuminate\Support\Facades\DB;
 
 class AnalyticsController extends Controller
@@ -111,13 +108,13 @@ class AnalyticsController extends Controller
 
         $data = [];
         foreach ($rows as $row) {
-            $data[$row->category_name][$row->month_key] = (float)$row->total;
+            $data[$row->category_name][$row->month_key] = (float) $row->total;
         }
 
         $alerts = [];
         foreach ($data as $category => $monthlyData) {
             $currentSpend = $monthlyData[$currentMonthKey] ?? 0;
-            $history = array_filter($monthlyData, fn($k) => $k !== $currentMonthKey, ARRAY_FILTER_USE_KEY);
+            $history = array_filter($monthlyData, fn ($k) => $k !== $currentMonthKey, ARRAY_FILTER_USE_KEY);
 
             if (empty($history)) {
                 continue;
@@ -127,11 +124,11 @@ class AnalyticsController extends Controller
 
             if ($avgSpend > 0 && $currentSpend > ($avgSpend * 1.5)) {
                 $alerts[] = [
-                    'category'      => $category,
+                    'category' => $category,
                     'current_spend' => $currentSpend,
-                    'avg_spend'     => $avgSpend,
-                    'excess'        => $currentSpend - $avgSpend,
-                    'pct_over'      => round((($currentSpend / $avgSpend) - 1) * 100),
+                    'avg_spend' => $avgSpend,
+                    'excess' => $currentSpend - $avgSpend,
+                    'pct_over' => round((($currentSpend / $avgSpend) - 1) * 100),
                 ];
             }
         }

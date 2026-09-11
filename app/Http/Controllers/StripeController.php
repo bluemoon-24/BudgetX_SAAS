@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaymentTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Models\PaymentTransaction;
+use Spatie\Permission\Models\Role;
+use Stripe\StripeClient;
+use Stripe\StripeObject;
 
 class StripeController extends Controller
 {
@@ -44,7 +47,7 @@ class StripeController extends Controller
                     'price_data' => [
                         'currency' => $currency,
                         'product_data' => [
-                            'name' => 'BudgetX Premium ' . ucfirst($request->plan),
+                            'name' => 'BudgetX Premium '.ucfirst($request->plan),
                         ],
                         'unit_amount' => (int) round($amount * 100),
                         'recurring' => [
@@ -53,13 +56,13 @@ class StripeController extends Controller
                     ],
                     'quantity' => 1,
                 ]],
-                'mode'        => 'subscription',
+                'mode' => 'subscription',
                 'client_reference_id' => (string) auth()->id(),
-                'success_url' => route('stripe.success') . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url'  => route('stripe.cancel'),
-                'metadata'    => [
+                'success_url' => route('stripe.success').'?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('stripe.cancel'),
+                'metadata' => [
                     'user_id' => auth()->id(),
-                    'plan'    => $request->plan,
+                    'plan' => $request->plan,
                     'currency' => 'LKR',
                 ],
             ]);
@@ -87,7 +90,7 @@ class StripeController extends Controller
 
     private function ensureRoleExists(string $roleName): void
     {
-        \Spatie\Permission\Models\Role::firstOrCreate(
+        Role::firstOrCreate(
             ['name' => $roleName, 'guard_name' => 'web'],
             ['name' => $roleName, 'guard_name' => 'web']
         );
@@ -110,7 +113,7 @@ class StripeController extends Controller
         ]);
     }
 
-    protected function stripeClient(): \Stripe\StripeClient
+    protected function stripeClient(): StripeClient
     {
         $secret = config('services.stripe.secret');
 
@@ -118,7 +121,7 @@ class StripeController extends Controller
             throw new \RuntimeException('Stripe is not configured.');
         }
 
-        return new \Stripe\StripeClient($secret);
+        return new StripeClient($secret);
     }
 
     private function expectedPlan(string $plan): array
@@ -132,7 +135,7 @@ class StripeController extends Controller
 
     private function sessionMetadata(mixed $metadata): array
     {
-        if ($metadata instanceof \Stripe\StripeObject) {
+        if ($metadata instanceof StripeObject) {
             return $metadata->toArray();
         }
 
@@ -171,7 +174,7 @@ class StripeController extends Controller
             || $this->value($session, 'mode') !== 'subscription'
             || (int) $this->value($session, 'amount_total') !== $expected['amount']
             || strtolower((string) $this->value($session, 'currency')) !== 'lkr'
-            || !$lineItem
+            || ! $lineItem
             || (int) $this->value($price, 'unit_amount') !== $expected['amount']
             || strtolower((string) $this->value($price, 'currency')) !== 'lkr'
             || $this->value($recurring, 'interval') !== $expected['interval']
@@ -196,7 +199,7 @@ class StripeController extends Controller
         $sessionId = $request->query('session_id');
         $user = $request->user();
 
-        if (!$sessionId || !$user) {
+        if (! $sessionId || ! $user) {
             return redirect()->route('subscribe')->withErrors([
                 'stripe' => 'We could not verify this payment.',
             ]);
@@ -213,7 +216,7 @@ class StripeController extends Controller
             );
 
             $this->ensureRoleExists('premium');
-            if (!$user->hasRole('premium')) {
+            if (! $user->hasRole('premium')) {
                 $user->assignRole('premium');
             }
             $user->forceFill(['role' => 'premium'])->save();
